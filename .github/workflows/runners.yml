@@ -78,5 +78,5 @@ jobs:
         run: |
           curl -L https://gitea.com/gitea/act_runner/releases/download/v0.2.10/act_runner-0.2.10-darwin-amd64 -o act_runner
           cp act_runner /usr/local/bin
-          act_runner register --no-interactive --instance ${{ secrets.GITEA_INSTANCE_URL }} --token ${{ secrets.GITEA_RUNNER_REGISTRATION_TOKEN }} --name github_darwin
-          act_runner daemon
+          sudo act_runner register --no-interactive --instance ${{ secrets.GITEA_INSTANCE_URL }} --token ${{ secrets.GITEA_RUNNER_REGISTRATION_TOKEN }} --name github_darwin
+          sudo act_runner daemon
