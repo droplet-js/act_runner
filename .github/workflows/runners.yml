@@ -73,6 +73,9 @@ jobs:
           chmod a+x ./act_runner
           ./act_runner register --no-interactive --instance ${{ secrets.GITEA_INSTANCE_URL }} --token ${{ secrets.GITEA_RUNNER_REGISTRATION_TOKEN }} --name github_linux
           ./act_runner daemon
+      - name: Setup Docker
+        if: matrix.os == 'macos-latest'
+        uses: docker-practice/actions-setup-docker@master
       - name: Run gitea/act_runner-darwin-amd64@shell
         if: matrix.os == 'macos-latest'
         run: |
