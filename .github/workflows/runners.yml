@@ -32,24 +32,24 @@ on:
 #     - cron: '* 4 * * *'
 
 jobs:
-  runner:
-    name: Docker Runner on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest]
-    steps:
-      - name: Run drone/drone-runner-docker@shell
-        run: |
-          docker run \
-            --volume=/var/run/docker.sock:/var/run/docker.sock \
-            --env=GITEA_INSTANCE_URL=${{ secrets.GITEA_INSTANCE_URL }} \
-            --env=GITEA_RUNNER_REGISTRATION_TOKEN=${{ secrets.GITEA_RUNNER_REGISTRATION_TOKEN }} \
-            --env=GITEA_RUNNER_NAME=github_docker \
-            --restart=always \
-            --name=act_runner \
-            gitea/act_runner:0.2.10
+  # runner:
+  #   name: Docker Runner on ${{ matrix.os }}
+  #   runs-on: ${{ matrix.os }}
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       os: [ubuntu-latest]
+  #   steps:
+  #     - name: Run drone/drone-runner-docker@shell
+  #       run: |
+  #         docker run \
+  #           --volume=/var/run/docker.sock:/var/run/docker.sock \
+  #           --env=GITEA_INSTANCE_URL=${{ secrets.GITEA_INSTANCE_URL }} \
+  #           --env=GITEA_RUNNER_REGISTRATION_TOKEN=${{ secrets.GITEA_RUNNER_REGISTRATION_TOKEN }} \
+  #           --env=GITEA_RUNNER_NAME=github_docker \
+  #           --restart=always \
+  #           --name=act_runner \
+  #           gitea/act_runner:0.2.10
 
   runner-exec:
     name: Exec Runner on ${{ matrix.os }}
@@ -64,19 +64,19 @@ jobs:
         if: matrix.os == 'windows-latest'
         run: |
           curl -L https://gitea.com/gitea/act_runner/releases/download/v0.2.10/act_runner-0.2.10-windows-amd64.exe -o act_runner.exe
-          act_runner.exe register --no-interactive --instance ${{ secrets.GITEA_INSTANCE_URL }} --token ${{ secrets.GITEA_RUNNER_REGISTRATION_TOKEN }} --name github_windows
-          act_runner.exe daemon 
-      - name: Run gitea/act_runner-linux-amd64@shell
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          curl -L https://gitea.com/gitea/act_runner/releases/download/v0.2.10/act_runner-0.2.10-linux-amd64 -o act_runner
-          sudo install -t /usr/local/bin act_runner
-          sudo act_runner register --no-interactive --instance ${{ secrets.GITEA_INSTANCE_URL }} --token ${{ secrets.GITEA_RUNNER_REGISTRATION_TOKEN }} --name github_linux
-          sudo act_runner daemon
-      - name: Run gitea/act_runner-darwin-amd64@shell
-        if: matrix.os == 'macos-latest'
-        run: |
-          curl -L https://gitea.com/gitea/act_runner/releases/download/v0.2.10/act_runner-0.2.10-darwin-amd64 -o act_runner
-          sudo cp act_runner /usr/local/bin
-          sudo act_runner register --no-interactive --instance ${{ secrets.GITEA_INSTANCE_URL }} --token ${{ secrets.GITEA_RUNNER_REGISTRATION_TOKEN }} --name github_darwin
-          sudo act_runner daemon
+          .\act_runner.exe register --no-interactive --instance ${{ secrets.GITEA_INSTANCE_URL }} --token ${{ secrets.GITEA_RUNNER_REGISTRATION_TOKEN }} --name github_windows
+          .\act_runner.exe daemon 
+      # - name: Run gitea/act_runner-linux-amd64@shell
+      #   if: matrix.os == 'ubuntu-latest'
+      #   run: |
+      #     curl -L https://gitea.com/gitea/act_runner/releases/download/v0.2.10/act_runner-0.2.10-linux-amd64 -o act_runner
+      #     sudo install -t /usr/local/bin act_runner
+      #     sudo act_runner register --no-interactive --instance ${{ secrets.GITEA_INSTANCE_URL }} --token ${{ secrets.GITEA_RUNNER_REGISTRATION_TOKEN }} --name github_linux
+      #     sudo act_runner daemon
+      # - name: Run gitea/act_runner-darwin-amd64@shell
+      #   if: matrix.os == 'macos-latest'
+      #   run: |
+      #     curl -L https://gitea.com/gitea/act_runner/releases/download/v0.2.10/act_runner-0.2.10-darwin-amd64 -o act_runner
+      #     sudo cp act_runner /usr/local/bin
+      #     sudo act_runner register --no-interactive --instance ${{ secrets.GITEA_INSTANCE_URL }} --token ${{ secrets.GITEA_RUNNER_REGISTRATION_TOKEN }} --name github_darwin
+      #     sudo act_runner daemon
