@@ -1,0 +1,82 @@
+name: runners
+
+#
+# [Events that trigger workflows](https://docs.github.com/zh/actions/using-workflows/events-that-trigger-workflows#workflow_run)
+#
+# ┌───────────── minute (0 - 59)
+# │ ┌───────────── hour (0 - 23)
+# │ │ ┌───────────── day of the month (1 - 31)
+# │ │ │ ┌───────────── month (1 - 12 or JAN-DEC)
+# │ │ │ │ ┌───────────── day of the week (0 - 6 or SUN-SAT)
+# │ │ │ │ │
+# │ │ │ │ │
+# │ │ │ │ │
+# * * * * *
+# 
+# 运算符	说明	示例
+# *	任何值	15 * * * * 在每天每小时的每个第 15 分钟运行。
+# ,	值列表分隔符	2,10 4,5 * * * 在每天第 4 和第 5 小时的第 2 和第 10 分钟运行。
+# -	值的范围	30 4-6 * * * 在第 4、5 和 6 小时的第 30 分钟运行。
+# /	步骤值	20/15 * * * * 在第 20 分钟到第 59 分钟每隔 15 分钟运行一次（第 20、35 和 50 分钟）。
+#
+# UTC 时间
+# 
+# 北京时间 UTC +8
+# 
+
+on: 
+  push:
+  pull_request:
+  workflow_dispatch:
+#   schedule:
+#     - cron: '* 4 * * *'
+
+jobs:
+  runner:
+    name: Docker Runner on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+    steps:
+      - name: Run drone/drone-runner-docker@shell
+        run: |
+          docker run \
+            --volume=/var/run/docker.sock:/var/run/docker.sock \
+            --env=GITEA_INSTANCE_URL=${{ secrets.GITEA_INSTANCE_URL }} \
+            --env=GITEA_RUNNER_REGISTRATION_TOKEN=${{ secrets.GITEA_RUNNER_REGISTRATION_TOKEN }} \
+            --env=GITEA_RUNNER_NAME=github_docker \
+            --restart=always \
+            --name=act_runner \
+            gitea/act_runner:0.2.10
+
+  runner-exec:
+    name: Exec Runner on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run gitea/act_runner-windows-amd64@shell
+        if: matrix.os == 'windows-latest'
+        run: |
+          curl -L https://gitea.com/gitea/act_runner/releases/download/v0.2.10/act_runner-0.2.10-windows-amd64.exe -o act_runner.exe
+          act_runner.exe register --no-interactive --instance ${{ secrets.GITEA_INSTANCE_URL }} --token ${{ secrets.GITEA_RUNNER_REGISTRATION_TOKEN }} --name github_windows
+          act_runner.exe daemon 
+      - name: Run gitea/act_runner-linux-amd64@shell
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          curl -L https://gitea.com/gitea/act_runner/releases/download/v0.2.10/act_runner-0.2.10-linux-amd64 -o act_runner
+          sudo install -t /usr/local/bin act_runner
+          sudo act_runner register --no-interactive --instance ${{ secrets.GITEA_INSTANCE_URL }} --token ${{ secrets.GITEA_RUNNER_REGISTRATION_TOKEN }} --name github_linux
+          sudo act_runner daemon
+      - name: Run gitea/act_runner-darwin-amd64@shell
+        if: matrix.os == 'macos-latest'
+        run: |
+          curl -L https://gitea.com/gitea/act_runner/releases/download/v0.2.10/act_runner-0.2.10-darwin-amd64 -o act_runner
+          sudo cp act_runner /usr/local/bin
+          sudo act_runner register --no-interactive --instance ${{ secrets.GITEA_INSTANCE_URL }} --token ${{ secrets.GITEA_RUNNER_REGISTRATION_TOKEN }} --name github_darwin
+          sudo act_runner daemon
