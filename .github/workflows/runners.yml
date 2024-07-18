@@ -100,9 +100,9 @@ jobs:
           curl -L https://gitea.com/gitea/act_runner/releases/download/v0.2.10/act_runner-0.2.10-linux-amd64 -o act_runner
           chmod a+x ./act_runner
           if [ ! -e ./.runner ]; then
-            ./act_runner --config ./config.yaml register --no-interactive --instance ${{ secrets.GITEA_INSTANCE_URL }} --token ${{ secrets.GITEA_RUNNER_REGISTRATION_TOKEN }} --name github_exec
+            ./act_runner register --no-interactive --instance ${{ secrets.GITEA_INSTANCE_URL }} --token ${{ secrets.GITEA_RUNNER_REGISTRATION_TOKEN }} --name github_exec
           fi
-          ./act_runner --config ./config.yaml daemon
+          ./act_runner daemon  > /dev/null 2>&1
       - uses: actions/cache/save@v4
         with:
           path: |
