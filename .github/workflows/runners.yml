@@ -25,12 +25,13 @@ name: runners
 # 
 
 on: 
-  push:
-    paths-ignore:
-      - 'README.md'
+  # push:
+  #   paths-ignore:
+  #     - '.gitea/workflows/**'
+  #     - 'README.md'
   workflow_dispatch:
-#   schedule:
-#     - cron: '* 4 * * *'
+  # schedule:
+  #   - cron: '* 4 * * *'
 
 jobs:
   runner:
