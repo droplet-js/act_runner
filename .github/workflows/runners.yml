@@ -47,6 +47,9 @@ jobs:
           path: |
             ./data
           key: runner-${{ runner.os }}
+      - name: Cat
+        run: |
+          if [ -d ./data/.runner ]; then cat ./data/.runner; fi
       - name: Run Docker gitea/act_runner
         timeout-minutes: 180
         continue-on-error: true
