@@ -49,7 +49,7 @@ jobs:
           key: runner-${{ runner.os }}
       - name: Cat
         run: |
-          if [ -d ./data/.runner ]; then cat ./data/.runner; fi
+          if [ -f ./data/.runner ]; then cat ./data/.runner; fi
       - name: Run Docker gitea/act_runner
         timeout-minutes: 180
         continue-on-error: true
@@ -85,6 +85,9 @@ jobs:
           path: |
             ./.runner
           key: runner-exec-${{ runner.os }}
+      - name: Cat
+        run: |
+          if [ -f ./.runner ]; then cat ./.runner; fi
       - name: Run gitea/act_runner-linux-amd64
         timeout-minutes: 180
         continue-on-error: true
@@ -115,6 +118,9 @@ jobs:
           path: |
             ./.runner
           key: runner-exec-host-${{ runner.os }}
+      - name: Cat
+        run: |
+          if [ -f ./.runner ]; then cat ./.runner; fi
       - name: Run gitea/act_runner-windows-amd64
         timeout-minutes: 180
         continue-on-error: true
