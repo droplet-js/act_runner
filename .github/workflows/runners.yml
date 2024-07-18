@@ -40,9 +40,16 @@ jobs:
       matrix:
         os: [ubuntu-latest]
     steps:
+      - name: Cache restore
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ./data
+          key: runner-${{ runner.os }}
       - name: Run Docker gitea/act_runner
         run: |
           docker run \
+            --volume=./data:/data \
             --volume=/var/run/docker.sock:/var/run/docker.sock \
             --env=GITEA_INSTANCE_URL=${{ secrets.GITEA_INSTANCE_URL }} \
             --env=GITEA_RUNNER_REGISTRATION_TOKEN=${{ secrets.GITEA_RUNNER_REGISTRATION_TOKEN }} \
@@ -50,6 +57,12 @@ jobs:
             --restart=always \
             --name=act_runner \
             gitea/act_runner:0.2.10
+      - name: Cache save
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ./data
+          key: runner-${{ runner.os }}
 
   runner-exec:
     name: Exec Runner on ${{ matrix.os }}
@@ -59,7 +72,12 @@ jobs:
       matrix:
         os: [ubuntu-latest]
     steps:
-      - uses: actions/checkout@v3
+      - name: Cache restore
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ./.runner
+          key: runner-exec-${{ runner.os }}
       - name: Run gitea/act_runner-linux-amd64
         if: matrix.os == 'ubuntu-latest'
         run: |
@@ -67,6 +85,12 @@ jobs:
           chmod a+x ./act_runner
           ./act_runner register --no-interactive --instance ${{ secrets.GITEA_INSTANCE_URL }} --token ${{ secrets.GITEA_RUNNER_REGISTRATION_TOKEN }} --name github_linux
           ./act_runner daemon
+      - name: Cache save
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ./.runner
+          key: runner-exec-${{ runner.os }}
 
   runner-exec-host:
     name: Exec Runner Host on ${{ matrix.os }}
@@ -76,7 +100,12 @@ jobs:
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
     steps:
-      - uses: actions/checkout@v3
+      - name: Cache restore
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ./.runner
+          key: runner-exec-host-${{ runner.os }}
       - name: Run gitea/act_runner-windows-amd64
         if: matrix.os == 'windows-latest'
         run: |
@@ -97,3 +126,9 @@ jobs:
           chmod a+x ./act_runner
           ./act_runner register --no-interactive --instance ${{ secrets.GITEA_INSTANCE_URL }} --token ${{ secrets.GITEA_RUNNER_REGISTRATION_TOKEN }} --name github_darwin_host --labels darwin:host
           ./act_runner daemon
+      - name: Cache save
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ./.runner
+          key: runner-exec-host-${{ runner.os }}
