@@ -43,7 +43,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
     steps:
-      - uses: actions/checkout@v4
+      # - uses: actions/checkout@v4
       - uses: actions/cache/restore@v4
         with:
           path: |
@@ -82,7 +82,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
     steps:
-      - uses: actions/checkout@v4
+      # - uses: actions/checkout@v4
       - uses: actions/cache/restore@v4
         with:
           path: |
@@ -118,7 +118,7 @@ jobs:
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
     steps:
-      - uses: actions/checkout@v4
+      # - uses: actions/checkout@v4
       - uses: actions/cache/restore@v4
         with:
           path: |
