@@ -9,7 +9,7 @@
 * Linux Runner: 默认模式即可
 
 ```yaml
-name: Gitea Runner on Github Action
+name: Gitea Action Runner on Github Action
 
 on: 
   workflow_dispatch:
@@ -79,7 +79,7 @@ jobs:
 * Macos Runner，不能用默认配置
 
 ```yaml
-name: Gitea Runner on Github Action
+name: Gitea Action Runner on Github Action
 
 on: 
   workflow_dispatch:
@@ -140,7 +140,7 @@ jobs:
 > 暂时还不知道如何关闭日志
 
 ```yaml
-name: Gitea Runner on Github Action
+name: Gitea Action Runner on Github Action
 
 on: 
   workflow_dispatch:
