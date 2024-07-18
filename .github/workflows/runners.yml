@@ -49,14 +49,18 @@ jobs:
           key: runner-${{ runner.os }}
       - name: Cat
         run: |
-          if [ -f ./data/.runner ]; then cat ./data/.runner; fi
+          if [ -f ./data/.runner ]; then
+            cat ./data/.runner
+          fi
       - name: Run Docker gitea/act_runner
         timeout-minutes: 180
         continue-on-error: true
         run: |
           docker run \
             --volume=./data:/data \
+            --volume=./config.yaml:/config.yaml \
             --volume=/var/run/docker.sock:/var/run/docker.sock \
+            --env=CONFIG_FILE=/config.yaml \
             --env=GITEA_INSTANCE_URL=${{ secrets.GITEA_INSTANCE_URL }} \
             --env=GITEA_RUNNER_REGISTRATION_TOKEN=${{ secrets.GITEA_RUNNER_REGISTRATION_TOKEN }} \
             --env=GITEA_RUNNER_NAME=github_docker \
@@ -87,15 +91,19 @@ jobs:
           key: runner-exec-${{ runner.os }}
       - name: Cat
         run: |
-          if [ -f ./.runner ]; then cat ./.runner; fi
+          if [ -f ./.runner ]; then
+            cat ./.runner
+          fi
       - name: Run gitea/act_runner-linux-amd64
         timeout-minutes: 180
         continue-on-error: true
         run: |
           curl -L https://gitea.com/gitea/act_runner/releases/download/v0.2.10/act_runner-0.2.10-linux-amd64 -o act_runner
           chmod a+x ./act_runner
-          ./act_runner register --no-interactive --instance ${{ secrets.GITEA_INSTANCE_URL }} --token ${{ secrets.GITEA_RUNNER_REGISTRATION_TOKEN }} --name github_exec
-          ./act_runner daemon
+          if [ ! -e ./.runner ]; then
+            ./act_runner --config ./config.yaml register --no-interactive --instance ${{ secrets.GITEA_INSTANCE_URL }} --token ${{ secrets.GITEA_RUNNER_REGISTRATION_TOKEN }} --name github_exec
+          fi
+          ./act_runner --config ./config.yaml daemon
       - name: Cache save
         uses: actions/cache/save@v4
         with:
@@ -121,7 +129,9 @@ jobs:
       - name: Cat on ${{ matrix.os }}
         if: matrix.os != 'windows-latest'
         run: |
-          if [ -f ./.runner ]; then cat ./.runner; fi
+          if [ -f ./.runner ]; then
+            cat ./.runner
+          fi
       - name: Cat on ${{ matrix.os }}
         if: matrix.os == 'windows-latest'
         run: |
@@ -134,8 +144,10 @@ jobs:
         if: matrix.os == 'windows-latest'
         run: |
           curl -L https://gitea.com/gitea/act_runner/releases/download/v0.2.10/act_runner-0.2.10-windows-amd64.exe -o act_runner.exe
-          .\act_runner.exe register --no-interactive --instance ${{ secrets.GITEA_INSTANCE_URL }} --token ${{ secrets.GITEA_RUNNER_REGISTRATION_TOKEN }} --name github_windows_host --labels windows:host
-          .\act_runner.exe daemon 
+          if (-not (Test-Path .\.runner)) {
+            .\act_runner.exe --config .\config.yaml register --no-interactive --instance ${{ secrets.GITEA_INSTANCE_URL }} --token ${{ secrets.GITEA_RUNNER_REGISTRATION_TOKEN }} --name github_windows_host --labels windows:host
+          }
+          .\act_runner.exe --config .\config.yaml daemon 
       - name: Run gitea/act_runner-linux-amd64
         timeout-minutes: 180
         continue-on-error: true
@@ -143,8 +155,10 @@ jobs:
         run: |
           curl -L https://gitea.com/gitea/act_runner/releases/download/v0.2.10/act_runner-0.2.10-linux-amd64 -o act_runner
           chmod a+x ./act_runner
-          ./act_runner register --no-interactive --instance ${{ secrets.GITEA_INSTANCE_URL }} --token ${{ secrets.GITEA_RUNNER_REGISTRATION_TOKEN }} --name github_ubuntu_host --labels ubuntu:host
-          ./act_runner daemon
+          if [ ! -e ./.runner ]; then
+            ./act_runner --config ./config.yaml register --no-interactive --instance ${{ secrets.GITEA_INSTANCE_URL }} --token ${{ secrets.GITEA_RUNNER_REGISTRATION_TOKEN }} --name github_ubuntu_host --labels ubuntu:host
+          fi
+          ./act_runner --config ./config.yaml daemon
       - name: Run gitea/act_runner-darwin-amd64
         timeout-minutes: 180
         continue-on-error: true
@@ -152,8 +166,10 @@ jobs:
         run: |
           curl -L https://gitea.com/gitea/act_runner/releases/download/v0.2.10/act_runner-0.2.10-darwin-amd64 -o act_runner
           chmod a+x ./act_runner
-          ./act_runner register --no-interactive --instance ${{ secrets.GITEA_INSTANCE_URL }} --token ${{ secrets.GITEA_RUNNER_REGISTRATION_TOKEN }} --name github_macos_host --labels macos:host
-          ./act_runner daemon
+          if [ ! -e ./.runner ]; then
+            ./act_runner --config ./config.yaml register --no-interactive --instance ${{ secrets.GITEA_INSTANCE_URL }} --token ${{ secrets.GITEA_RUNNER_REGISTRATION_TOKEN }} --name github_macos_host --labels macos:host
+          fi
+          ./act_runner --config ./config.yaml daemon
       - name: Cache save
         uses: actions/cache/save@v4
         with:
