@@ -5,7 +5,7 @@
 ### Gitea Action Runner 寄生到 Github Action
 
 > 寄生时注意隐藏日志
-> 日志里会出现Gitea域名、用户名、组织名、仓库名等一些相对敏感数据
+> 日志里会出现Gitea域名、用户名、组织名、仓库名等一些相对敏感的数据
 
 * Linux Runner: 默认模式即可
 
