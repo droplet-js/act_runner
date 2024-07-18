@@ -34,6 +34,7 @@ on:
 jobs:
   runner:
     name: Docker Runner on ${{ matrix.os }}
+    timeout-minutes: 360
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -47,6 +48,7 @@ jobs:
             ./data
           key: runner-${{ runner.os }}
       - name: Run Docker gitea/act_runner
+        timeout-minutes: 180
         continue-on-error: true
         run: |
           docker run \
@@ -67,6 +69,7 @@ jobs:
 
   runner-exec:
     name: Exec Runner on ${{ matrix.os }}
+    timeout-minutes: 360
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -80,8 +83,8 @@ jobs:
             ./.runner
           key: runner-exec-${{ runner.os }}
       - name: Run gitea/act_runner-linux-amd64
+        timeout-minutes: 180
         continue-on-error: true
-        if: matrix.os == 'ubuntu-latest'
         run: |
           curl -L https://gitea.com/gitea/act_runner/releases/download/v0.2.10/act_runner-0.2.10-linux-amd64 -o act_runner
           chmod a+x ./act_runner
@@ -96,6 +99,7 @@ jobs:
 
   runner-exec-host:
     name: Exec Runner Host on ${{ matrix.os }}
+    timeout-minutes: 360
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -109,6 +113,7 @@ jobs:
             ./.runner
           key: runner-exec-host-${{ runner.os }}
       - name: Run gitea/act_runner-windows-amd64
+        timeout-minutes: 180
         continue-on-error: true
         if: matrix.os == 'windows-latest'
         run: |
@@ -116,6 +121,7 @@ jobs:
           .\act_runner.exe register --no-interactive --instance ${{ secrets.GITEA_INSTANCE_URL }} --token ${{ secrets.GITEA_RUNNER_REGISTRATION_TOKEN }} --name github_windows_host --labels windows:host
           .\act_runner.exe daemon 
       - name: Run gitea/act_runner-linux-amd64
+        timeout-minutes: 180
         continue-on-error: true
         if: matrix.os == 'ubuntu-latest'
         run: |
@@ -124,6 +130,7 @@ jobs:
           ./act_runner register --no-interactive --instance ${{ secrets.GITEA_INSTANCE_URL }} --token ${{ secrets.GITEA_RUNNER_REGISTRATION_TOKEN }} --name github_linux_host --labels linux:host
           ./act_runner daemon
       - name: Run gitea/act_runner-darwin-amd64
+        timeout-minutes: 180
         continue-on-error: true
         if: matrix.os == 'macos-latest'
         run: |
