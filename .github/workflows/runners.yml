@@ -88,12 +88,12 @@ jobs:
         run: |
           curl -L https://gitea.com/gitea/act_runner/releases/download/v0.2.10/act_runner-0.2.10-linux-amd64 -o act_runner
           chmod a+x ./act_runner
-          ./act_runner register --no-interactive --instance ${{ secrets.GITEA_INSTANCE_URL }} --token ${{ secrets.GITEA_RUNNER_REGISTRATION_TOKEN }} --name github_linux_host --labels windows:host
+          ./act_runner register --no-interactive --instance ${{ secrets.GITEA_INSTANCE_URL }} --token ${{ secrets.GITEA_RUNNER_REGISTRATION_TOKEN }} --name github_linux_host --labels linux:host
           ./act_runner daemon
       - name: Run gitea/act_runner-darwin-amd64
         if: matrix.os == 'macos-latest'
         run: |
           curl -L https://gitea.com/gitea/act_runner/releases/download/v0.2.10/act_runner-0.2.10-darwin-amd64 -o act_runner
           chmod a+x ./act_runner
-          ./act_runner register --no-interactive --instance ${{ secrets.GITEA_INSTANCE_URL }} --token ${{ secrets.GITEA_RUNNER_REGISTRATION_TOKEN }} --name github_darwin_host --labels windows:host
+          ./act_runner register --no-interactive --instance ${{ secrets.GITEA_INSTANCE_URL }} --token ${{ secrets.GITEA_RUNNER_REGISTRATION_TOKEN }} --name github_darwin_host --labels darwin:host
           ./act_runner daemon
