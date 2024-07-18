@@ -26,7 +26,8 @@ name: runners
 
 on: 
   push:
-  pull_request:
+    paths-ignore:
+      - 'README.md'
   workflow_dispatch:
 #   schedule:
 #     - cron: '* 4 * * *'
